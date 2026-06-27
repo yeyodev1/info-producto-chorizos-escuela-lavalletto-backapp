@@ -12,6 +12,7 @@ const whitelist = [
   "http://localhost:5174",
   "https://testing-storybrand-frontend.bakano.ec",
   "https://testing-storybrand-backapp.bakano.ec",
+  "https://lavalletto-chorizos.netlify.app",
 ];
 
 const envOrigins = (process.env.CORS_ORIGINS || "")
