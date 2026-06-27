@@ -1,11 +1,13 @@
 import express, { Application } from "express";
+import payphoneRouter from "./payphone.routes";
+import authRouter from "./auth.routes";
 
 function routerApi(app: Application) {
   const router = express.Router();
   app.use("/api", router);
 
-  // Register your routes here:
-  // router.use("/users", userRouter);
+  router.use("/payphone", payphoneRouter);
+  router.use("/auth", authRouter);
 }
 
 export default routerApi;

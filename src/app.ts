@@ -1,32 +1,47 @@
+import "dotenv/config";
 import express from "express";
-import cors from "cors";
 import http from "http";
 import routerApi from "./routes";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.middleware";
 
 const whitelist = [
-  "http://localhost:8100",
+  "http://localhost:8101",
   "http://localhost:8080",
   "http://localhost:5173",
   "http://localhost:5174",
-  "http://localhost:8101",
+  "https://testing-storybrand-frontend.bakano.ec",
+  "https://testing-storybrand-backapp.bakano.ec",
 ];
 
-const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || whitelist.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-};
+const envOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map(o => o.trim())
+  .filter(Boolean);
+
+const allowedOrigins = [...whitelist, ...envOrigins];
 
 export function createApp() {
   const app = express();
 
-  app.use(cors(corsOptions));
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+
+    if (origin && allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Access-Control-Allow-Credentials", "true");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+      res.setHeader("Access-Control-Max-Age", "86400");
+    }
+
+    if (req.method === "OPTIONS") {
+      res.status(204).end();
+      return;
+    }
+
+    next();
+  });
+
   app.use(express.json({ limit: "50mb" }));
 
   app.get("/", (_req, res) => {
