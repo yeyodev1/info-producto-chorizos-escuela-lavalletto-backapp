@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 let connecting: Promise<void> | null = null;
 
+mongoose.connection.on("disconnected", () => {
+  connecting = null;
+});
+
 export async function dbConnect() {
   const DB_URI = process.env.DB_URI;
 
@@ -28,6 +32,10 @@ export async function dbConnect() {
 }
 
 export function ensureDbConnected() {
+  if (mongoose.connection.readyState !== 1) {
+    connecting = null;
+  }
+
   if (!connecting) {
     connecting = dbConnect().catch((err) => {
       console.error("MongoDB connection error:", err);
