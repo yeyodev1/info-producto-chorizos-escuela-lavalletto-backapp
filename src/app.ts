@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import http from "http";
 import routerApi from "./routes";
+import { dbConnect } from "./config/mongo";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.middleware";
 
 const whitelist = [
@@ -21,6 +22,8 @@ const envOrigins = (process.env.CORS_ORIGINS || "")
 const allowedOrigins = [...whitelist, ...envOrigins];
 
 export function createApp() {
+  dbConnect();
+
   const app = express();
 
   app.use((req, res, next) => {
