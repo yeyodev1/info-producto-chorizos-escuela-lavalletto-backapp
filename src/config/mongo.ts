@@ -4,7 +4,8 @@ export async function dbConnect() {
   const DB_URI = process.env.DB_URI;
 
   if (!DB_URI) {
-    throw new Error("DB_URI is not defined in environment variables");
+    console.error("DB_URI is not defined in environment variables");
+    return;
   }
 
   try {
@@ -12,6 +13,5 @@ export async function dbConnect() {
     console.log("Connected to MongoDB");
   } catch (error) {
     console.error("MongoDB connection error:", error);
-    process.exit(1);
   }
 }
