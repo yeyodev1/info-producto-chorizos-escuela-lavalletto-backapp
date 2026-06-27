@@ -1,4 +1,5 @@
-import { createApp, ensureDbConnected } from "../src/app";
+import { createApp } from "../src/app";
+import { ensureDbConnected } from "../src/config/mongo";
 
 const { app } = createApp();
 

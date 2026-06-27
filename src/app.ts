@@ -3,7 +3,6 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import routerApi from "./routes";
-import { dbConnect } from "./config/mongo";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.middleware";
 
 const whitelist = [
@@ -53,13 +52,4 @@ export function createApp() {
   const server = http.createServer(app);
 
   return { app, server };
-}
-
-let dbPromise: Promise<void> | null = null;
-
-export function ensureDbConnected() {
-  if (!dbPromise) {
-    dbPromise = dbConnect();
-  }
-  return dbPromise;
 }
