@@ -3,6 +3,7 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import routerApi from "./routes";
+import { ensureDbConnected } from "./config/mongo";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.middleware";
 
 const whitelist = [
@@ -43,6 +44,21 @@ export function createApp() {
 
   app.get("/", (_req, res) => {
     res.send("Server is alive");
+  });
+
+  app.use(async (req, res, next) => {
+    if (req.method === "OPTIONS" || req.path === "/") {
+      next();
+      return;
+    }
+    try {
+      await ensureDbConnected();
+      next();
+    } catch {
+      res.status(503).json({
+        message: "Base de datos no disponible, intentalo de nuevo en unos segundos",
+      });
+    }
   });
 
   routerApi(app);
