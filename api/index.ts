@@ -2,17 +2,19 @@ import { createApp, ensureDbConnected } from "../src/app";
 
 const { app } = createApp();
 
-app.use(async (req, _res, next) => {
+app.use(async (req, res, next) => {
   if (req.method === "OPTIONS" || req.path === "/") {
     next();
     return;
   }
   try {
     await ensureDbConnected();
+    next();
   } catch {
-    // will retry next request
+    res.status(503).json({
+      message: "Base de datos no disponible, intentalo de nuevo en unos segundos",
+    });
   }
-  next();
 });
 
 export default app;

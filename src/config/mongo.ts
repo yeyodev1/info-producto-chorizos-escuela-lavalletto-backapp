@@ -32,6 +32,7 @@ export function ensureDbConnected() {
     connecting = dbConnect().catch((err) => {
       console.error("MongoDB connection error:", err);
       connecting = null;
+      throw err;
     });
   }
   return connecting;
