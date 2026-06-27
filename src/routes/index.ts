@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import mongoose from "mongoose";
 import payphoneRouter from "./payphone.routes";
 import authRouter from "./auth.routes";
+import { ensureDbConnected } from "../config/mongo";
 
 function routerApi(app: Application) {
   const router = express.Router();
@@ -10,6 +11,14 @@ function routerApi(app: Application) {
   router.get("/health/db", async (_req, res) => {
     const start = Date.now();
     try {
+      let connectResult = "not attempted";
+      try {
+        await ensureDbConnected();
+        connectResult = "ok";
+      } catch (err: any) {
+        connectResult = `failed: ${err.message}`;
+      }
+
       const readyState = mongoose.connection.readyState;
       const states = ["disconnected", "connected", "connecting", "disconnecting"];
       let pingResult = "not attempted";
@@ -32,6 +41,7 @@ function routerApi(app: Application) {
       }
 
       res.json({
+        connectResult,
         readyState,
         stateName: states[readyState] || "unknown",
         pingResult,
